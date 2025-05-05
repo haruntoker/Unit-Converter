@@ -9,7 +9,7 @@ export default function Home() {
       className="flex min-h-screen flex-col items-center justify-between"
       aria-label="Unit Converter Main Content"
     >
-      <h1 className="sr-only">Unit Converter</h1>
+      <h1 className="sr-only">Unit & Currency Converter</h1>
       <Converter />
     </main>
   );

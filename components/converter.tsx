@@ -13,7 +13,7 @@ export function Converter() {
   return (
     <div className="w-full max-w-md mx-auto p-4 min-h-screen flex flex-col">
       <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Unit Converter</h1>
+        <h1 className="text-2xl font-bold">Unit & Currency Converter</h1>
         <div className="flex items-center gap-2">
           <InstallPWA />
           <ModeToggle />
