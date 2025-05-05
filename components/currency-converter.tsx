@@ -2,19 +2,15 @@
 
 import { ConverterCard } from "@/components/converter-card";
 import {
-  Command,
+  CommandDialog,
   CommandEmpty,
   CommandInput,
   CommandItem,
   CommandList,
 } from "@/components/ui/command";
+import { DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -175,82 +171,74 @@ export function CurrencyConverter() {
         <div className="grid grid-cols-2 gap-4">
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="fromCurrency">From</Label>
-            <Popover open={fromOpen} onOpenChange={setFromOpen}>
-              <PopoverTrigger asChild>
-                <button
-                  type="button"
-                  className="w-full border rounded-md px-3 py-2 text-left bg-background"
-                  aria-label="Select from currency"
-                >
-                  {fromCurrency
-                    ? `${CURRENCY_META[fromCurrency].symbol} ${fromCurrency} – ${CURRENCY_META[fromCurrency].name}`
-                    : "Select currency"}
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[300px] p-0">
-                <Command>
-                  <CommandInput placeholder="Search currency..." />
-                  <CommandList>
-                    <CommandEmpty>No currency found.</CommandEmpty>
-                    {SUPPORTED_CURRENCIES.map((code) => (
-                      <CommandItem
-                        key={code}
-                        value={code}
-                        onSelect={() => {
-                          setFromCurrency(code);
-                          setFromOpen(false);
-                        }}
-                        className="cursor-pointer"
-                        aria-selected={fromCurrency === code}
-                      >
-                        {CURRENCY_META[code].symbol} {code} –{" "}
-                        {CURRENCY_META[code].name}
-                      </CommandItem>
-                    ))}
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+            <button
+              type="button"
+              className="w-full border rounded-md px-3 py-2 text-left bg-background"
+              aria-label="Select from currency"
+              onClick={() => setFromOpen(true)}
+            >
+              {fromCurrency
+                ? `${CURRENCY_META[fromCurrency].symbol} ${fromCurrency}`
+                : "Select currency"}
+            </button>
+            <CommandDialog open={fromOpen} onOpenChange={setFromOpen}>
+              <DialogTitle>Select currency</DialogTitle>
+              <CommandInput placeholder="Search currency..." />
+              <CommandList>
+                <CommandEmpty>No currency found.</CommandEmpty>
+                {SUPPORTED_CURRENCIES.map((code) => (
+                  <CommandItem
+                    key={code}
+                    value={code}
+                    onSelect={() => {
+                      setFromCurrency(code);
+                      setFromOpen(false);
+                    }}
+                    className="cursor-pointer"
+                    aria-selected={fromCurrency === code}
+                  >
+                    {CURRENCY_META[code].symbol} {code} –{" "}
+                    {CURRENCY_META[code].name}
+                  </CommandItem>
+                ))}
+              </CommandList>
+            </CommandDialog>
           </div>
 
           <div className="grid w-full items-center gap-1.5">
             <Label htmlFor="toCurrency">To</Label>
-            <Popover open={toOpen} onOpenChange={setToOpen}>
-              <PopoverTrigger asChild>
-                <button
-                  type="button"
-                  className="w-full border rounded-md px-3 py-2 text-left bg-background"
-                  aria-label="Select to currency"
-                >
-                  {toCurrency
-                    ? `${CURRENCY_META[toCurrency].symbol} ${toCurrency} – ${CURRENCY_META[toCurrency].name}`
-                    : "Select currency"}
-                </button>
-              </PopoverTrigger>
-              <PopoverContent className="w-[300px] p-0">
-                <Command>
-                  <CommandInput placeholder="Search currency..." />
-                  <CommandList>
-                    <CommandEmpty>No currency found.</CommandEmpty>
-                    {SUPPORTED_CURRENCIES.map((code) => (
-                      <CommandItem
-                        key={code}
-                        value={code}
-                        onSelect={() => {
-                          setToCurrency(code);
-                          setToOpen(false);
-                        }}
-                        className="cursor-pointer"
-                        aria-selected={toCurrency === code}
-                      >
-                        {CURRENCY_META[code].symbol} {code} –{" "}
-                        {CURRENCY_META[code].name}
-                      </CommandItem>
-                    ))}
-                  </CommandList>
-                </Command>
-              </PopoverContent>
-            </Popover>
+            <button
+              type="button"
+              className="w-full border rounded-md px-3 py-2 text-left bg-background"
+              aria-label="Select to currency"
+              onClick={() => setToOpen(true)}
+            >
+              {toCurrency
+                ? `${CURRENCY_META[toCurrency].symbol} ${toCurrency}`
+                : "Select currency"}
+            </button>
+            <CommandDialog open={toOpen} onOpenChange={setToOpen}>
+              <DialogTitle>Select currency</DialogTitle>
+              <CommandInput placeholder="Search currency..." />
+              <CommandList>
+                <CommandEmpty>No currency found.</CommandEmpty>
+                {SUPPORTED_CURRENCIES.map((code) => (
+                  <CommandItem
+                    key={code}
+                    value={code}
+                    onSelect={() => {
+                      setToCurrency(code);
+                      setToOpen(false);
+                    }}
+                    className="cursor-pointer"
+                    aria-selected={toCurrency === code}
+                  >
+                    {CURRENCY_META[code].symbol} {code} –{" "}
+                    {CURRENCY_META[code].name}
+                  </CommandItem>
+                ))}
+              </CommandList>
+            </CommandDialog>
           </div>
         </div>
 
