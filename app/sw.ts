@@ -30,31 +30,30 @@ self.addEventListener("install", (event) => {
  */
 self.addEventListener("fetch", (event) => {
   event.respondWith(
-    caches
-      .match(event.request)
-      .then((response) => {
-        if (response) {
-          return response
+    caches.match(event.request).then((response) => {
+      if (response) {
+        return response;
+      }
+      return fetch(event.request).then((networkResponse) => {
+        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== "basic") {
+          return networkResponse;
         }
-        return fetch(event.request).then((response) => {
-          if (!response || response.status !== 200 || response.type !== "basic") {
-            return response
-          }
-          const responseToCache = response.clone()
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache)
-          }).catch(() => {
-            // Optionally, send error to monitoring service
-          })
-          return response
-        })
-      })
-      .catch(() => {
-        if (event.request.mode === "navigate") {
-          return caches.match("/")
-        }
-      })
-  )
+        const responseToCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, responseToCache);
+        }).catch(() => {
+          // Optionally, send error to monitoring service
+        });
+        return networkResponse;
+      });
+    }).catch(() => {
+      // Always return a Response, never undefined
+      if (event.request.mode === "navigate") {
+        return caches.match("/").then((fallback) => fallback || new Response("Offline", { status: 503, statusText: "Offline" }));
+      }
+      return new Response("Offline", { status: 503, statusText: "Offline" });
+    })
+  );
 })
 
 /**

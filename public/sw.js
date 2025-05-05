@@ -7,7 +7,7 @@ self.addEventListener("install", (event) => {
   event.waitUntil(
     caches.open(CACHE).then((cache) => {
       console.log("[PWA] Cached offline page")
-      return cache.addAll(["/", "/offline", "/icons/icon-192x192.png", "/icons/icon-512x512.png"])
+      return cache.addAll(["/", "/offline", "/favicon.ico"])
     }),
   )
 })
