@@ -8,7 +8,8 @@ export function Footer() {
       rel="noopener noreferrer"
       className="underline hover:text-primary transition-colors"
     >
-      harundev.com
+      harundev.com  
+      
     </a>
   </footer>
   

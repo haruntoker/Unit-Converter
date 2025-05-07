@@ -1,7 +1,6 @@
 "use client";
 import { CurrencyConverter } from "@/components/currency-converter";
 import { DistanceConverter } from "@/components/distance-converter";
-import { Footer } from "@/components/footer";
 import { InstallPWA } from "@/components/install-pwa";
 import { OfflineAlert } from "@/components/offline-alert";
 import { TemperatureConverter } from "@/components/temperature-converter";
@@ -41,7 +40,7 @@ export function ConverterTabProvider({
 export function Converter() {
   const { tab, setTab } = useConverterTab();
   return (
-    <div className="w-full max-w-md mx-auto p-4 min-h-screen flex flex-col">
+    <div className="w-full max-w-md mx-auto p-4 flex flex-col">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Unit & Currency Converter</h1>
         <div className="flex items-center gap-2">
@@ -63,7 +62,7 @@ export function Converter() {
           <TabsContent value="temperature">
             <TemperatureConverter />
           </TabsContent>
-          <div className="fixed bottom-0 left-0 right-0 border-t bg-background">
+          <div className="hidden md:block fixed bottom-0 left-0 right-0 border-t bg-background">
             <TabsList className="w-full h-16 grid grid-cols-4">
               <TabsTrigger
                 value="currency"
@@ -97,8 +96,6 @@ export function Converter() {
           </div>
         </Tabs>
       </div>
-      <div className="h-16"></div> {/* Spacer for bottom navigation */}
-      <Footer />
     </div>
   );
 }

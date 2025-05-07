@@ -67,7 +67,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ConverterTabProvider>
-            <div className="min-h-[100svh] flex flex-col bg-background">
+            <div className="flex flex-col bg-background">
               <main
                 className="flex-1 flex flex-col max-w-screen-md mx-auto w-full px-2 pb-[80px]"
                 aria-label="Main Content"
@@ -93,13 +93,12 @@ export default function RootLayout({
                     }
                   >
                     {children}
+                    <Footer />
                   </Suspense>
                 </ErrorBoundary>
               </main>
-              <Footer />
               <ServiceWorkerRegister />
               <BottomNav />
-             
             </div>
           </ConverterTabProvider>
         </ThemeProvider>

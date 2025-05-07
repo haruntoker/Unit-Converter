@@ -9,7 +9,7 @@ export function BottomNav() {
   if (!isMobile) return null;
   return (
     <nav
-      className="fixed bottom-0 left-0 w-full z-40 bg-background/95 backdrop-blur-lg border-t border-border flex items-center justify-around py-3 px-2 shadow-2xl rounded-t-2xl"
+      className="fixed bottom-6 left-0 w-full z-40 bg-background/95 backdrop-blur-lg border  flex items-center justify-around py-3 px-2 shadow-2xl rounded-t-2xl"
       role="navigation"
       aria-label="Bottom Navigation"
     >
