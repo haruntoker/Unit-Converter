@@ -12,6 +12,7 @@ import { DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { useState } from "react";
 
 /**
@@ -114,6 +115,40 @@ export function CurrencyConverter() {
   const [toCurrency, setToCurrency] = useState<CurrencyCode>("EUR");
   const [fromOpen, setFromOpen] = useState(false);
   const [toOpen, setToOpen] = useState(false);
+  const [usingCache, setUsingCache] = useState(false);
+  const [cachedAt, setCachedAt] = useState<number | null>(null);
+  // Refresh interval in ms (configurable, e.g., 60s)
+  const REFRESH_INTERVAL = 60_000;
+
+  // Utility: cache key for localStorage
+  const RATES_CACHE_KEY = "currency-rates-cache";
+
+  // Try to load cached rates if offline or fetch fails
+  function getCachedRates(base: CurrencyCode) {
+    try {
+      const raw = localStorage.getItem(RATES_CACHE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed[base]) {
+        setCachedAt(parsed[base].timestamp);
+        return parsed[base].rates;
+      }
+    } catch {}
+    return null;
+  }
+
+  // Save rates to cache
+  function saveRatesToCache(
+    base: CurrencyCode,
+    rates: Record<CurrencyCode, number>
+  ) {
+    try {
+      const raw = localStorage.getItem(RATES_CACHE_KEY);
+      const parsed = raw ? JSON.parse(raw) : {};
+      parsed[base] = { rates, timestamp: Date.now() };
+      localStorage.setItem(RATES_CACHE_KEY, JSON.stringify(parsed));
+    } catch {}
+  }
 
   const {
     data: rates,
@@ -122,12 +157,31 @@ export function CurrencyConverter() {
     error,
     refetch,
     isFetching,
+    dataUpdatedAt,
   } = useQuery<Record<CurrencyCode, number>, Error>({
     queryKey: ["currency-rates", fromCurrency /*, date*/],
-    queryFn: () => fetchRates(fromCurrency /*, date*/),
+    queryFn: async () => {
+      try {
+        const onlineRates = await fetchRates(fromCurrency /*, date*/);
+        saveRatesToCache(fromCurrency, onlineRates);
+        setUsingCache(false);
+        setCachedAt(null);
+        return onlineRates;
+      } catch (err) {
+        // If offline or fetch fails, try to load from cache
+        const cached = getCachedRates(fromCurrency);
+        if (cached) {
+          setUsingCache(true);
+          return cached;
+        }
+        setUsingCache(false);
+        throw err;
+      }
+    },
     staleTime: 1000 * 60 * 10, // 10 minutes
     retry: 2,
     refetchOnWindowFocus: false,
+    refetchInterval: REFRESH_INTERVAL,
   });
 
   let result = "-";
@@ -145,6 +199,17 @@ export function CurrencyConverter() {
     setToCurrency(fromCurrency);
   };
 
+  // Format last updated timestamp
+  const lastUpdated = dataUpdatedAt
+    ? format(new Date(dataUpdatedAt), "HH:mm:ss 'UTC,' yyyy-MM-dd")
+    : null;
+  const lastCached = cachedAt
+    ? format(new Date(cachedAt), "HH:mm:ss 'UTC,' yyyy-MM-dd")
+    : null;
+
+  // Show warning if using cached data
+  const showCacheWarning = usingCache || (!rates && !isLoading && !isFetching);
+
   return (
     <ConverterCard
       title="Currency Converter"
@@ -152,6 +217,35 @@ export function CurrencyConverter() {
       result={result}
       onSwap={handleSwap}
     >
+      {/* Refresh controls and last updated timestamp */}
+      <div className="flex items-center justify-between mb-2 gap-2">
+        <div className="text-xs text-muted-foreground" aria-live="polite">
+          {lastUpdated && !usingCache
+            ? `Last updated: ${lastUpdated}`
+            : lastCached && usingCache
+            ? `Using cached rates: ${lastCached}`
+            : "Not updated yet"}
+        </div>
+        <button
+          type="button"
+          className="text-xs px-2 py-1 rounded bg-muted hover:bg-accent border border-border transition-colors disabled:opacity-60"
+          onClick={() => refetch()}
+          disabled={isFetching}
+          aria-label="Refresh rates"
+        >
+          {isFetching ? "Refreshing..." : "Refresh"}
+        </button>
+      </div>
+      {showCacheWarning && (
+        <div
+          className="text-xs text-warning bg-warning/10 rounded px-2 py-1 mb-2"
+          role="alert"
+        >
+          {rates
+            ? "You are offline or the rates provider is unavailable. Showing last available rates."
+            : "No rates available offline. Please connect to the internet to fetch rates."}
+        </div>
+      )}
       <div className="space-y-4">
         <div className="grid w-full items-center gap-1.5">
           <Label htmlFor="amount">Amount</Label>

@@ -1,10 +1,14 @@
+import { BottomNav } from "@/components/bottom-nav";
+import { ConverterTabProvider } from "@/components/converter";
+import { Footer } from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import type React from "react";
+import { Suspense } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import "./globals.css";
 import { ServiceWorkerRegister } from "./sw-register";
-import { Footer } from "@/components/footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -38,20 +42,66 @@ export default function RootLayout({
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        {/* Structured Data for SEO */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              name: "Unit Converter | HarunDev",
+              description:
+                "A Progressive Web App for converting between different units",
+              applicationCategory: "FinanceApplication",
+              operatingSystem: "All",
+              url: "https://unit-converter.harundev.com",
+            }),
+          }}
+        />
       </head>
-      <body className={inter.className}>
+      <body className={inter.className} aria-label="App Body">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <div className="min-h-screen flex flex-col ">
-            <main className="flex-1 flex flex-col pb-[96px] md:pb-12">
-              {children}
-            </main>
-          </div>
-          <ServiceWorkerRegister />
+          <ConverterTabProvider>
+            <div className="min-h-[100svh] flex flex-col bg-background">
+              <main
+                className="flex-1 flex flex-col max-w-screen-md mx-auto w-full px-2 pb-[80px]"
+                aria-label="Main Content"
+              >
+                {/* ErrorBoundary for catching runtime errors */}
+                <ErrorBoundary
+                  fallback={
+                    <div
+                      role="alert"
+                      className="p-8 text-center text-destructive bg-destructive/10 rounded-lg"
+                      aria-live="assertive"
+                    >
+                      An unexpected error occurred. Please refresh or try again
+                      later.
+                    </div>
+                  }
+                >
+                  <Suspense
+                    fallback={
+                      <div className="p-8 text-center" aria-busy="true">
+                        Loading…
+                      </div>
+                    }
+                  >
+                    {children}
+                  </Suspense>
+                </ErrorBoundary>
+              </main>
+              <Footer />
+              <ServiceWorkerRegister />
+              <BottomNav />
+             
+            </div>
+          </ConverterTabProvider>
         </ThemeProvider>
       </body>
     </html>
