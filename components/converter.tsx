@@ -40,7 +40,7 @@ export function ConverterTabProvider({
 export function Converter() {
   const { tab, setTab } = useConverterTab();
   return (
-    <div className="w-full max-w-md mx-auto p-4 flex flex-col">
+    <div className="w-full h-full max-w-md mx-auto p-4 flex flex-col">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Unit & Currency Converter</h1>
         <div className="flex items-center gap-2">
@@ -48,7 +48,7 @@ export function Converter() {
         </div>
       </div>
       <OfflineAlert />
-      <div className="flex-1">
+      <div className="flex-1 ">
         <Tabs value={tab} onValueChange={setTab} className="w-full">
           <TabsContent value="currency">
             <CurrencyConverter />
