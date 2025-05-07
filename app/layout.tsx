@@ -67,7 +67,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <ConverterTabProvider>
-            <div className="flex flex-col bg-background">
+            <div className="flex flex-col bg-background min-h-screen">
               <main
                 className="flex-1 flex flex-col max-w-screen-md mx-auto w-full px-2 pb-[80px]"
                 aria-label="Main Content"
