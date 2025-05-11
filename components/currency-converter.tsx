@@ -220,11 +220,16 @@ export function CurrencyConverter() {
       {/* Refresh controls and last updated timestamp */}
       <div className="flex items-center justify-between mb-2 gap-2">
         <div className="text-xs text-muted-foreground" aria-live="polite">
-          {lastUpdated && !usingCache
-            ? `Last updated: ${lastUpdated}`
-            : lastCached && usingCache
-            ? `Using cached rates: ${lastCached}`
-            : "Not updated yet"}
+          {lastUpdated && !usingCache ? (
+            <>
+              Last updated: <br /> {lastUpdated}
+              
+            </>
+          ) : lastCached && usingCache ? (
+            `Using cached rates: ${lastCached}`
+          ) : (
+            "Not updated yet"
+          )}
         </div>
         <button
           type="button"

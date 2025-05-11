@@ -35,8 +35,9 @@ export function ConverterCard({
       <CardContent>
         <div className="space-y-4">
           {children}
-
+         
           <div className="mt-4 p-4 rounded-lg bg-muted">
+            
             <div className="text-sm text-muted-foreground">Result</div>
             <motion.div
               key={result}
@@ -44,6 +45,7 @@ export function ConverterCard({
               animate={{ opacity: 1, y: 0 }}
               className="text-2xl font-bold"
             >
+              
               {result}
             </motion.div>
           </div>
